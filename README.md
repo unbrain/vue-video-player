@@ -7,6 +7,7 @@
 [Demo Page](https://unbrain.github.io/vue-video-player/dist/)
 
 # Feature
+
 <u>progressBar components</u>
 
 <u>hoverItem components</u>
@@ -22,6 +23,8 @@
 - loading
 - video error handle
 - replay when done
+- play rate control
+- page in page
 - ...
 
 # Options

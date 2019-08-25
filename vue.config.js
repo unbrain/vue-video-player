@@ -5,7 +5,7 @@ function resolve (dir) {
 module.exports = {
   lintOnSave: true,
   publicPath: process.env.NODE_ENV === 'production'
-  ? '/vue-video-player/'
+  ? '/vue-video-player/dist'
   : '/',
   parallel: require('os').cpus().length > 1,
   devServer: {
