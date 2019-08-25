@@ -1,6 +1,6 @@
 <template>
-  <div class="progress-wrap" ref="progressWrap" @mousedown="dragProcess($event)">
-    <div class="progress" :style="progressStyle">
+  <div class="progress-wrap" @mousedown="dragProcess($event)" ref="progress">
+    <div class="progress" :style="progressStyle" ref="progressWrap">
       <div class="current-progress" :style="progress">
         <div :style="ballStyle" class="ball"></div>
       </div>
@@ -130,10 +130,7 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 100%;
-  height: 100%;
   cursor: pointer;
-  background-color: rgba(13, 44, 138, 0.4);
   .progress {
     display: flex;
     flex-grow: 1;

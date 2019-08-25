@@ -1,11 +1,16 @@
 <template>
   <div class="video-container" v-if="showVideo" v-on:keyup.esc="cancelFullScreen">
     <div class="controls" ref="videoPlayer" id="player">
-      <div class="wc-controls">
-        <button class="wc-play" @click="play" v-if="showPlay">播放</button>
-        <button class="wc-pause" @click="pause" v-else>暂停</button>
-        <button class="wc-full" @click="fullScreen" v-if="showFullScreen">全屏</button>
-        <button class="wc-cancelFull" @click="cancelFullScreen" v-else>取消全屏</button>
+      <video
+        :src="videoOptions.src"
+        ref="videoTag"
+        :style="videoArea"
+        @click="handleClickPlay"
+      ></video>
+      <div class="wc-controls" v-show="showControls">
+        <div @click.stop="handleClickPlay">
+          <hover-item :name="playButton"></hover-item>
+        </div>
         <progress-bar
           class="progress-bar"
           :progressOptions="{ height: 4, borderRadius: 2 }"
@@ -13,36 +18,36 @@
           @drag="modifyTime"
         >
         </progress-bar>
-        {{ showTime }}
-        <div class="wc-volume">
-          <div>音量</div>
+        <div class="show-time">{{ showTime }}</div>
+        <div class="wc-volume" ref="volumeButton">
+          <div @click.stop="handleClickVolume">
+            <hover-item :name="volumeButton"></hover-item>
+          </div>
           <progress-bar
             class="volume-progress-bar"
             :progressOptions="{ height: 100, borderRadius: 2, vertical: true, width: 4 }"
             :percent="currentVolume"
             @drag="modifyVolume"
+            v-show="volumeHover"
           >
           </progress-bar>
         </div>
+        <div @click.stop="handleClickFullscreen">
+          <hover-item :name="fullScreenButton"></hover-item>
+        </div>
       </div>
-      <video :src="videoOptions.src" ref="videoTag" :style="videoArea"></video>
-      <!-- <div
-        class="hideBar"
-        v-show="showTimeBar"
-      >
-        <div
-          class="hideBarDetail"
-          :style="progress"
-        ></div>
-      </div> -->
+      <div class="hideBar" v-show="!showControls">
+        <div class="hideBarDetail" :style="hideProgressBar"></div>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
+import hoverItem from './hover-item';
 import progressBar from './progressBar';
 export default {
-  components: { progressBar },
+  components: { progressBar, hoverItem },
   props: {
     videoOptions: {
       type: Object,
@@ -59,15 +64,26 @@ export default {
       video: null,
       videoPlayer: null,
       isDragProcess: false,
-      showTimeBar: false,
+      showControls: false,
       currentTime: 0,
       videoTime: 0,
       videoVolume: 0,
+      videoMemoryVolume: 0,
+      volumeHover: false,
+      hideVolumeBarTimer: null,
       showTimeBarTimer: null,
       wrapX: 0,
+      volumeButton: 'volume',
+      playButton: 'play',
+      fullScreenButton: 'fullscreen',
     };
   },
   computed: {
+    hideProgressBar() {
+      return {
+        width: `${this.currentTimePercent * 100}%`,
+      };
+    },
     currentVolume() {
       return this.videoVolume;
     },
@@ -102,16 +118,75 @@ export default {
     this.$nextTick(() => {
       this.video = this.$refs.videoTag;
       this.videoVolume = this.video.volume;
+      this.videoHandle();
+    });
+  },
+  methods: {
+    videoHandle() {
+      this.$refs.videoPlayer.addEventListener('mousemove', () => {
+        this.showControls = true;
+        clearTimeout(this.showControlsTimer);
+        this.showControlsTimer = setTimeout(() => {
+          this.showControls = false;
+        }, 3000);
+      });
       this.video.addEventListener('loadeddata', () => {
         this.videoTime = this.video.duration;
       });
       this.video.addEventListener('timeupdate', () => {
         this.currentTime = this.video.currentTime; //获取当前播放时间
       });
+      this.video.addEventListener('volumechange', () => {
+        this.videoVolume = this.video.volume;
+      });
+      this.$refs.volumeButton.addEventListener('mouseenter', () => {
+        this.volumeHover = true;
+      });
+      this.$refs.volumeButton.addEventListener('mouseleave', () => {
+        if (this.volumeHover) {
+          clearTimeout(this.hideVolumeBarTimer);
+          this.hideVolumeBarTimer = setTimeout(() => {
+            this.volumeHover = false;
+          }, 500);
+        }
+      });
       document.addEventListener(this.FullscreenApi.fullscreenchange, this.exitHandler);
-    });
-  },
-  methods: {
+    },
+    handleClickVolume() {
+      if (this.video.volume !== 0) {
+        this.videoMemoryVolume = this.video.volume;
+        this.video.volume = 0;
+        this.volumeButton = 'volume-x';
+      } else {
+        this.video.volume = this.videoMemoryVolume;
+        this.volumeButton = 'volume';
+      }
+    },
+    handleClickPlay() {
+      if (this.playButton === 'play') {
+        let playPromise = this.video.play();
+        //播放的 promise 容错处理
+        if (playPromise !== undefined) {
+          playPromise.catch(() => {
+            this.video.pause();
+            return;
+          });
+        }
+        this.playButton = 'stop';
+      } else {
+        this.video.pause();
+        this.playButton = 'play';
+      }
+    },
+    handleClickFullscreen() {
+      if (this.fullScreenButton === 'fullscreen') {
+        this.fullScreen();
+        this.fullScreenButton = 'fullscreenexit';
+      } else {
+        this.cancelFullScreen();
+        this.fullScreenButton = 'fullscreen';
+      }
+    },
     modifyVolume(newVolume) {
       this.videoVolume = newVolume;
       this.video.volume = newVolume;
@@ -123,7 +198,7 @@ export default {
       document.addEventListener('mouseup', () => {
         this.isDragProcess = false;
       });
-      document.addEventListener('mousemove', this.handleHideBar);
+      document.addEventListener('mousemove', this.handleMouseMove);
     },
     timeFormate(time) {
       let ct = Math.floor(time);
@@ -133,10 +208,10 @@ export default {
       m = m >= 10 ? m : '0' + m;
       return `${m}:${s}`;
     },
-    handleHideBar() {
+    handleMouseMove() {
       this.showTimeBar = true;
       clearTimeout(this.showTimeBarTimer);
-      setTimeout(() => {
+      this.showTimeBarTimer = setTimeout(() => {
         this.showTimeBar = false;
       }, 3000);
     },
@@ -205,21 +280,6 @@ export default {
         }
       }
     },
-    play() {
-      let playPromise = this.video.play();
-      //播放的 promise 容错处理
-      if (playPromise !== undefined) {
-        playPromise.catch(() => {
-          this.pause();
-          return;
-        });
-      }
-      this.showPlay = false;
-    },
-    pause() {
-      this.video.pause();
-      this.showPlay = true;
-    },
     getfullscreen(option = true) {
       let root = document.documentElement;
       if (option) {
@@ -258,10 +318,15 @@ html:-ms-fullscreen {
     position: relative;
     max-width: 1024px;
     max-height: 670px;
-    background-color: black;
+    background-color: rgb(197, 195, 195);
     video {
       width: 100%;
       height: 100%;
+    }
+    .show-time {
+      display: flex;
+      align-items: center;
+      padding: 0 20px 0 10px;
     }
     .wc-controls {
       display: flex;
@@ -271,6 +336,7 @@ html:-ms-fullscreen {
       right: 0;
       width: 100%;
       height: 2em;
+      background-color: #000;
       visibility: visible;
       color: aliceblue;
     }
@@ -290,18 +356,21 @@ html:-ms-fullscreen {
     }
     .wc-volume {
       position: relative;
-      width: 50px;
+      min-width: 0;
+      min-height: 0;
       .volume-progress-bar {
         position: absolute;
-        left: 0;
-        top: -100px;
-        width: 10px;
-        height: 100px;
+        left: 50%;
+        top: -110px;
+        padding: 5px;
+        background-color: #000;
+        transform: translateX(-50%);
       }
     }
     .progress-bar {
       flex-grow: 1;
       height: 100%;
+      padding: 0 10px;
     }
   }
 }
