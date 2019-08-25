@@ -1,4 +1,4 @@
-# vue-video-player
+# vue-video-player-lightweight
 
 ## Project setup
 ```

@@ -1,0 +1,13 @@
+// .eslintignore
+/** TODO:
+ *  现阶段对很多的文件都没有进行检查
+ *  1. 先对 vue 文件进行格式化
+ */
+/node_modules/
+/build/
+/pubilc/
+/static/
+# **/custom-plugins/**/*.vue
+# **/*.js
+src/assets/js/viewer.js
+src/components/custom-plugins/vue-video-player/video.js

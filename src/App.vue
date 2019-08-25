@@ -1,19 +1,22 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <light-video
+      :videoOptions="{ src: 'http://localhost:3000/206', size: [500, 500] }"
+      @hide="vcShow = false"
+    >
+    </light-video>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import lightVideo from './components/video';
 
 export default {
   name: 'app',
   components: {
-    HelloWorld
-  }
-}
+    lightVideo,
+  },
+};
 </script>
 
 <style>
