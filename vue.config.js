@@ -4,6 +4,9 @@ function resolve (dir) {
 }
 module.exports = {
   lintOnSave: true,
+  publicPath: process.env.NODE_ENV === 'production'
+  ? '/vue-video-player/'
+  : '/',
   parallel: require('os').cpus().length > 1,
   devServer: {
     open: process.platform === 'darwin',

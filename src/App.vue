@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <light-video
-      :videoOptions="{ src: 'http://localhost:3000/206', size: [500, 500] }"
+      :videoOptions="{ src: 'https://vjs.zencdn.net/v/oceans.mp4', size: [500, 500] }"
       @hide="vcShow = false"
     >
     </light-video>

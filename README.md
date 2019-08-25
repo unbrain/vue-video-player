@@ -1,29 +1,41 @@
-# vue-video-player-lightweight
+# vue-video-player
 
-## Project setup
-```
-npm install
-```
+> a lightweight components for video player
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
+# Example
 
-### Compiles and minifies for production
-```
-npm run build
-```
+[Demo Page](https://unbrain.github.io/vue-video-player/dist/)
 
-### Run your tests
-```
-npm run test
-```
+# Feature
+<u>progressBar components</u>
 
-### Lints and fixes files
-```
-npm run lint
-```
+<u>hoverItem components</u>
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+<u>play/stop</u>
+
+<u>fullscreen/cancalFullscreen</u>
+
+<u>volume control</u>
+
+<u>currentTime control</u>
+
+- loading
+- video error handle
+- replay when done
+- ...
+
+# Options
+| prop| type | required |
+| :----| :---- | :---- |
+| videoOption | Object | true |
+
+
+# Development
+Clone this GitHub repository.
+
+Browse to the folder in the command line.
+
+Run the `npm install` command to install the theme's development dependencies within a /node_modules/ folder.
+
+Run the `npm run serve` command for development.
+
