@@ -50,7 +50,7 @@ export default {
             : 0;
         this.modifyNum = currentNum / this.$refs.progressWrap.clientHeight;
       } else {
-        currentNum = e.screenX - this.$refs.progressWrap.getClientRects()[0].x;
+        currentNum = e.clientX - this.$refs.progressWrap.getClientRects()[0].x;
         currentNum =
           currentNum > 0
             ? currentNum > this.$refs.progressWrap.clientWidth

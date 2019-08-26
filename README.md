@@ -20,9 +20,10 @@
 
 <u>currentTime control</u>
 
+replay when done
+
 - loading
 - video error handle
-- replay when done
 - play rate control
 - page in page
 - ...

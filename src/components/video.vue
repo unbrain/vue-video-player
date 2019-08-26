@@ -139,6 +139,11 @@ export default {
       this.video.addEventListener('volumechange', () => {
         this.videoVolume = this.video.volume;
       });
+      this.video.addEventListener('ended', () => {
+        this.video.currentTime = this.video.duration;
+        this.playButton = 'replay';
+      });
+      // this.video.addEventListener('error', e => {});
       this.$refs.volumeButton.addEventListener('mouseenter', () => {
         this.volumeHover = true;
       });
@@ -163,7 +168,7 @@ export default {
       }
     },
     handleClickPlay() {
-      if (this.playButton === 'play') {
+      if (this.playButton === 'play' || this.playButton === 'replay') {
         let playPromise = this.video.play();
         //播放的 promise 容错处理
         if (playPromise !== undefined) {
@@ -192,6 +197,7 @@ export default {
       this.video.volume = newVolume;
     },
     modifyTime(newTimePercent) {
+      this.currentTime = newTimePercent * this.videoTime;
       this.video.currentTime = newTimePercent * this.videoTime;
     },
     handleEvent() {

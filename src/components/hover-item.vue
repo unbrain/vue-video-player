@@ -13,7 +13,7 @@ export default {
   mounted() {
     if (document.getElementById('my-icon')) return;
     var scriptTag = document.createElement('script');
-    scriptTag.src = '//at.alicdn.com/t/font_1369087_unw9gqaalo.js';
+    scriptTag.src = '//at.alicdn.com/t/font_1369087_ipmjia6qair.js';
     scriptTag.id = 'my-icon';
     document.getElementsByTagName('head')[0].appendChild(scriptTag);
   },
@@ -58,6 +58,11 @@ export default {
     }
   }
   &.volume {
+    &:hover {
+      fill: #ff9900;
+    }
+  }
+  &.replay {
     &:hover {
       fill: #ff9900;
     }
