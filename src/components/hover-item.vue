@@ -13,7 +13,7 @@ export default {
   mounted() {
     if (document.getElementById('my-icon')) return;
     var scriptTag = document.createElement('script');
-    scriptTag.src = '//at.alicdn.com/t/font_1369087_ipmjia6qair.js';
+    scriptTag.src = '//at.alicdn.com/t/font_1369087_oodq4p7irro.js';
     scriptTag.id = 'my-icon';
     document.getElementsByTagName('head')[0].appendChild(scriptTag);
   },

@@ -7,6 +7,9 @@
         :style="videoArea"
         @click="handleClickPlay"
       ></video>
+      <div v-if="showLoading">
+        <hover-item :name="'loading'" class="loading"></hover-item>
+      </div>
       <div class="wc-controls" v-show="showControls">
         <div @click.stop="handleClickPlay">
           <hover-item :name="playButton"></hover-item>
@@ -65,6 +68,7 @@ export default {
       videoPlayer: null,
       isDragProcess: false,
       showControls: false,
+      showLoading: true,
       currentTime: 0,
       videoTime: 0,
       videoVolume: 0,
@@ -134,7 +138,13 @@ export default {
         this.videoTime = this.video.duration;
       });
       this.video.addEventListener('timeupdate', () => {
+        if (this.showLoading === true) {
+          this.showLoading = false;
+        }
         this.currentTime = this.video.currentTime; //获取当前播放时间
+        if (this.video.currentTime >= this.video.buffered.end(0) && this.showLoading === false) {
+          this.showLoading = true;
+        }
       });
       this.video.addEventListener('volumechange', () => {
         this.videoVolume = this.video.volume;
@@ -142,6 +152,7 @@ export default {
       this.video.addEventListener('ended', () => {
         this.video.currentTime = this.video.duration;
         this.playButton = 'replay';
+        this.showLoading = false;
       });
       // this.video.addEventListener('error', e => {});
       this.$refs.volumeButton.addEventListener('mouseenter', () => {
@@ -325,6 +336,28 @@ html:-ms-fullscreen {
     max-width: 1024px;
     max-height: 670px;
     background-color: rgb(197, 195, 195);
+    .loading {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      animation: animal 1s infinite linear;
+      transform-origin: center center;
+      transform-origin: center center;
+    }
+
+    @keyframes animal {
+      0% {
+        transform: rotate(0deg);
+        -ms-transform: rotate(0deg);
+        -webkit-transform: rotate(0deg);
+      }
+      100% {
+        transform: rotate(-360deg);
+        -ms-transform: rotate(-360deg);
+        -webkit-transform: rotate(-360deg);
+      }
+    }
     video {
       width: 100%;
       height: 100%;
